@@ -9,7 +9,7 @@ import (
 	"github.com/crossplane/function-sdk-go/request"
 	"github.com/crossplane/function-sdk-go/response"
 
-	"github.com/crossplane/function-usages/input/v1beta1"
+	"github.com/erikgb/function-usages/input/v1beta1"
 )
 
 // Function returns whatever response you ask it to.
