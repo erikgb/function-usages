@@ -1,4 +1,4 @@
-module github.com/crossplane/function-usages
+module github.com/erikgb/function-usages
 
 go 1.24.9
 
