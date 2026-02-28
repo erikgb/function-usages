@@ -16,10 +16,20 @@ apiVersion: example.crossplane.io/v1
 kind: XR
 metadata:
   name: example-xr
+status:
+  conditions:
+  - lastTransitionTime: "2024-01-01T00:00:00Z"
+    reason: Available
+    status: "True"
+    type: Ready
+  - lastTransitionTime: "2024-01-01T00:00:00Z"
+    reason: Success
+    status: "True"
+    type: FunctionSuccess
 ---
 apiVersion: render.crossplane.io/v1beta1
 kind: Result
-message: I was run with input "Hello world"!
+message: I was run with input [{{namespace} {cluster}}]!
 severity: SEVERITY_NORMAL
-step: run-the-template
+step: deletion-ordering
 ```

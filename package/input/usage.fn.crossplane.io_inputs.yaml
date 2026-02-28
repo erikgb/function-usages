@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.20.1
-  name: inputs.template.fn.crossplane.io
+  name: inputs.usage.fn.crossplane.io
 spec:
-  group: template.fn.crossplane.io
+  group: usage.fn.crossplane.io
   names:
     categories:
     - crossplane
@@ -28,10 +28,6 @@ spec:
               may reject unrecognized values.
               More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
-          example:
-            description: Example is an example field. Replace it with whatever input
-              you need. :)
-            type: string
           kind:
             description: |-
               Kind is a string value representing the REST resource this object represents.
@@ -42,8 +38,35 @@ spec:
             type: string
           metadata:
             type: object
+          usages:
+            description: Usages defines the usages between composed resources
+            items:
+              description: Usage is a simplified view of a Crossplane Usage used in
+                compositions..
+              properties:
+                by:
+                  description: Resource is the specification of composed resource(s).
+                  properties:
+                    name:
+                      type: string
+                  required:
+                  - name
+                  type: object
+                of:
+                  description: Resource is the specification of composed resource(s).
+                  properties:
+                    name:
+                      type: string
+                  required:
+                  - name
+                  type: object
+              required:
+              - by
+              - of
+              type: object
+            type: array
         required:
-        - example
+        - usages
         type: object
     served: true
     storage: true
