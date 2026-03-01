@@ -9,3 +9,13 @@ metadata:
 spec:
   # This is ignored when using the Development runtime.
   package: function-usages
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Function
+metadata:
+  name: function-patch-and-transform
+  annotations:
+    # FIXME: This is a custom annotation not currently supported by crossplane CLI
+    render.crossplane.io/runtime-docker-network: devnet
+spec:
+  package: xpkg.crossplane.io/crossplane-contrib/function-patch-and-transform:v0.10.1
