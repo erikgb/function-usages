@@ -6,6 +6,8 @@ package v1beta1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/crossplane/function-sdk-go/resource"
 )
 
 // This isn't a custom resource, in the sense that we never install its CRD.
@@ -19,17 +21,12 @@ type Input struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Usages defines the usages between composed resources
-	Usages []Usage `json:"usages"`
+	// Rules is a list of rules that describe sequences of resources.
+	Rules []SequencingRule `json:"rules"`
 }
 
-// Usage is a simplified view of a Crossplane Usage used in compositions..
-type Usage struct {
-	By Resource `json:"by"`
-	Of Resource `json:"of"`
-}
-
-// Resource is the specification of composed resource(s).
-type Resource struct {
-	Name string `json:"name"`
+// SequencingRule is a rule that describes a sequence of resources.
+type SequencingRule struct {
+	// Sequence is a list of composition resource names.
+	Sequence []resource.Name `json:"sequence,omitempty"`
 }
