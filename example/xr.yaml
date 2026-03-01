@@ -3,4 +3,5 @@ apiVersion: example.crossplane.io/v1
 kind: XR
 metadata:
   name: example-xr
+  namespace: ns
 spec: {}
