@@ -8,14 +8,16 @@ spec:
     kind: XR
   mode: Pipeline
   pipeline:
-  - step: deletion-ordering
-    functionRef:
-      name: function-usages
-    input:
-      apiVersion: usage.fn.crossplane.io/v1beta1
-      kind: Input
-      usages:
-        - of:
-            name: cluster
-          by:
-            name: namespace
+    - step: deletion-ordering
+      functionRef:
+        name: function-usages
+      input:
+        apiVersion: usage.fn.crossplane.io/v1beta1
+        kind: Input
+        rules:
+          - sequence:
+              - first-resource
+              - second-resource
+          - sequence:
+              - first-resource
+              - third-resource

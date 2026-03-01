@@ -47,8 +47,8 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	}
 
 	// TODO: Add your Function logic here!
-	response.Normalf(rsp, "I was run with input %v!", in.Usages)
-	f.log.Info("I was run!", "input", in.Usages)
+	response.Normalf(rsp, "I was run with input %v!", in.Rules)
+	f.log.Info("I was run!", "input", in.Rules)
 
 	// You can set a custom status condition on the claim. This allows you to
 	// communicate with the user. See the link below for status condition

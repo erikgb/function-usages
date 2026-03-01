@@ -29,7 +29,8 @@ status:
 ---
 apiVersion: render.crossplane.io/v1beta1
 kind: Result
-message: I was run with input [{{namespace} {cluster}}]!
+message: I was run with input [{[first-resource second-resource]} {[first-resource
+  third-resource]}]!
 severity: SEVERITY_NORMAL
 step: deletion-ordering
 ```

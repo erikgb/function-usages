@@ -38,35 +38,22 @@ spec:
             type: string
           metadata:
             type: object
-          usages:
-            description: Usages defines the usages between composed resources
+          rules:
+            description: Rules is a list of rules that describe sequences of resources.
             items:
-              description: Usage is a simplified view of a Crossplane Usage used in
-                compositions..
               properties:
-                by:
-                  description: Resource is the specification of composed resource(s).
-                  properties:
-                    name:
-                      type: string
-                  required:
-                  - name
-                  type: object
-                of:
-                  description: Resource is the specification of composed resource(s).
-                  properties:
-                    name:
-                      type: string
-                  required:
-                  - name
-                  type: object
-              required:
-              - by
-              - of
+                sequence:
+                  description: Sequence is a list of composition resource names.
+                  items:
+                    description: |-
+                      A Name uniquely identifies a composed resource within a Composition Function
+                      pipeline. It's not the resource's metadata.name.
+                    type: string
+                  type: array
               type: object
             type: array
         required:
-        - usages
+        - rules
         type: object
     served: true
     storage: true
