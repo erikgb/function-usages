@@ -8,6 +8,37 @@ spec:
     kind: XR
   mode: Pipeline
   pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+          - name: first-subresource-1
+            base:
+              apiVersion: nop.crossplane.io/v1alpha1
+              kind: NopResource
+              metadata:
+                name: first-subresource-1
+          - name: first-subresource-2
+            base:
+              apiVersion: nop.crossplane.io/v1alpha1
+              kind: NopResource
+              metadata:
+                name: first-subresource-2
+          - name: second-object
+            base:
+              apiVersion: nop.crossplane.io/v1alpha1
+              kind: NopResource
+              metadata:
+                name: second-object
+          - name: third-resource
+            base:
+              apiVersion: nop.crossplane.io/v1alpha1
+              kind: NopResource
+              metadata:
+                name: third-resource
     - step: deletion-ordering
       functionRef:
         name: function-usages
@@ -16,8 +47,6 @@ spec:
         kind: Input
         rules:
           - sequence:
-              - first-resource
-              - second-resource
-          - sequence:
-              - first-resource
+              - first-subresource-.*
+              - object$ # this will match everything that ends with "object"
               - third-resource
