@@ -8,10 +8,14 @@ spec:
     kind: XR
   mode: Pipeline
   pipeline:
-  - step: run-the-template
+  - step: deletion-ordering
     functionRef:
       name: function-usages
     input:
-      apiVersion: template.fn.crossplane.io/v1beta1
+      apiVersion: usage.fn.crossplane.io/v1beta1
       kind: Input
-      example: "Hello world"
+      usages:
+        - of:
+            name: cluster
+          by:
+            name: namespace
