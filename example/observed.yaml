@@ -1,0 +1,24 @@
+---
+apiVersion: nop.crossplane.io/v1alpha1
+kind: NopResource
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: first-subresource-1
+  name: first-subresource-1
+  namespace: ns
+---
+apiVersion: nop.crossplane.io/v1alpha1
+kind: NopResource
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: first-subresource-2
+  name: first-subresource-2
+  namespace: ns
+---
+apiVersion: nop.crossplane.io/v1alpha1
+kind: NopResource
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: second-resource
+  name: second-resource
+  namespace: ns

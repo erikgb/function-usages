@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
@@ -19,26 +20,14 @@ spec:
             base:
               apiVersion: nop.crossplane.io/v1alpha1
               kind: NopResource
-              metadata:
-                name: first-subresource-1
           - name: first-subresource-2
             base:
               apiVersion: nop.crossplane.io/v1alpha1
               kind: NopResource
-              metadata:
-                name: first-subresource-2
-          - name: second-object
+          - name: second-resource
             base:
               apiVersion: nop.crossplane.io/v1alpha1
               kind: NopResource
-              metadata:
-                name: second-object
-          - name: third-resource
-            base:
-              apiVersion: nop.crossplane.io/v1alpha1
-              kind: NopResource
-              metadata:
-                name: third-resource
     - step: deletion-ordering
       functionRef:
         name: function-usages
@@ -48,5 +37,4 @@ spec:
         rules:
           - sequence:
               - first-subresource-.*
-              - object$ # this will match everything that ends with "object"
-              - third-resource
+              - second-resource

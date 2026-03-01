@@ -4,7 +4,10 @@ go 1.26.0
 
 require (
 	github.com/alecthomas/kong v1.14.0
+	github.com/crossplane/crossplane-runtime/v2 v2.2.0
+	github.com/crossplane/crossplane/v2 v2.2.0
 	github.com/crossplane/function-sdk-go v0.6.0
+	github.com/dominikbraun/graph v0.23.0
 	github.com/google/go-cmp v0.7.0
 	google.golang.org/protobuf v1.36.11
 	k8s.io/apimachinery v0.35.2
@@ -15,7 +18,6 @@ require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/crossplane/crossplane-runtime/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emicklei/go-restful/v3 v3.13.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect

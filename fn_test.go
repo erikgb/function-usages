@@ -4,24 +4,34 @@ import (
 	"context"
 	"testing"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"github.com/crossplane/function-sdk-go/logging"
-	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
+	v1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/resource"
 	"github.com/crossplane/function-sdk-go/response"
+
+	"github.com/erikgb/function-usages/input/v1beta1"
 )
 
 func TestRunFunction(t *testing.T) {
+	var (
+		xr    = `{"apiVersion":"example.org/v1","kind":"XR","metadata":{"name":"cool-xr"},"spec":{"count":2}}`
+		nxr   = `{"apiVersion":"example.org/v1","kind":"XR","metadata":{"name":"cool-xr","namespace":"cool-namespace"},"spec":{"count":2}}`
+		nmr   = `{"apiVersion":"example.org/v1","kind":"MR","metadata":{"name":"cool-mr","namespace":"cool-namespace"}}`
+		nuv2  = `{"apiVersion":"protection.crossplane.io/v1beta1","kind":"Usage","metadata":{"name":"mr-cool-mr-xr-cool-xr-d9f469-dependency","namespace":"cool-namespace"},"spec":{"by":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"of":{"apiVersion":"example.org/v1","kind":"XR","resourceRef":{"name":"cool-xr"}},"reason":"dependency","replayDeletion":true}}`
+		nu2v2 = `{"apiVersion":"protection.crossplane.io/v1beta1","kind":"Usage","metadata":{"name":"mr-cool-mr-mr-cool-mr-91201d-dependency","namespace":"cool-namespace"},"spec":{"by":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"of":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"reason":"dependency","replayDeletion":true}}`
+	)
+
 	type args struct {
 		ctx context.Context
-		req *fnv1.RunFunctionRequest
+		req *v1.RunFunctionRequest
 	}
 	type want struct {
-		rsp *fnv1.RunFunctionResponse
+		rsp *v1.RunFunctionResponse
 		err error
 	}
 
@@ -30,33 +40,164 @@ func TestRunFunction(t *testing.T) {
 		args   args
 		want   want
 	}{
-		"ResponseIsReturned": {
-			reason: "The Function should return a fatal result if no input was specified",
+		"FirstReadyUsageV2Namespaced": {
+			reason: "The function should create a V2 Namespaced Usage when the first resource is ready",
 			args: args{
-				req: &fnv1.RunFunctionRequest{
-					Meta: &fnv1.RequestMeta{Tag: "hello"},
-					Input: resource.MustStructJSON(`{
-						"apiVersion": "usage.fn.crossplane.io/v1beta1",
-						"kind": "Input"
-					}`),
+				req: &v1.RunFunctionRequest{
+					Input: resource.MustStructObject(&v1beta1.Input{
+						Rules: []v1beta1.SequencingRule{
+							{
+								Sequence: []resource.Name{
+									"first",
+									"second",
+								},
+							},
+						},
+					}),
+					Observed: &v1.State{
+						Composite: &v1.Resource{
+							Resource: resource.MustStructJSON(xr),
+						},
+						Resources: map[string]*v1.Resource{
+							"first": {
+								Resource: resource.MustStructJSON(nxr),
+							},
+							"second": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+						},
+					},
+					Desired: &v1.State{
+						Composite: &v1.Resource{
+							Resource: resource.MustStructJSON(xr),
+						},
+						Resources: map[string]*v1.Resource{
+							"first": {
+								Resource: resource.MustStructJSON(nxr),
+							},
+							"second": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+						},
+					},
 				},
 			},
 			want: want{
-				rsp: &fnv1.RunFunctionResponse{
-					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
-					Results: []*fnv1.Result{
-						{
-							Severity: fnv1.Severity_SEVERITY_NORMAL,
-							Message:  "I was run with input []!",
-							Target:   fnv1.Target_TARGET_COMPOSITE.Enum(),
+				rsp: &v1.RunFunctionResponse{
+					Meta:    &v1.ResponseMeta{Ttl: durationpb.New(response.DefaultTTL)},
+					Results: []*v1.Result{},
+					Desired: &v1.State{
+						Composite: &v1.Resource{
+							Resource: resource.MustStructJSON(xr),
+						},
+						Resources: map[string]*v1.Resource{
+							"first": {
+								Resource: resource.MustStructJSON(nxr),
+							},
+							"second": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"second-first-usage": {
+								Resource: resource.MustStructJSON(nuv2),
+								Ready:    v1.Ready_READY_TRUE,
+							},
 						},
 					},
-					Conditions: []*fnv1.Condition{
-						{
-							Type:   "FunctionSuccess",
-							Status: fnv1.Status_STATUS_CONDITION_TRUE,
-							Reason: "Success",
-							Target: fnv1.Target_TARGET_COMPOSITE_AND_CLAIM.Enum(),
+				},
+			},
+		},
+		"MixedRegexUsageV2Namespaced": {
+			reason: "The function should delay the creation of second and fourth resources because the first and third are not ready",
+			args: args{
+				req: &v1.RunFunctionRequest{
+					Input: resource.MustStructObject(&v1beta1.Input{
+						Rules: []v1beta1.SequencingRule{
+							{
+								Sequence: []resource.Name{
+									"first",
+									"second-.*",
+									"third",
+								},
+							},
+						},
+					}),
+					Observed: &v1.State{
+						Composite: &v1.Resource{
+							Resource: resource.MustStructJSON(xr),
+						},
+						Resources: map[string]*v1.Resource{
+							"first": {
+								Resource: resource.MustStructJSON(nxr),
+							},
+							"second-0": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"second-1": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"third": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+						},
+					},
+					Desired: &v1.State{
+						Composite: &v1.Resource{
+							Resource: resource.MustStructJSON(xr),
+						},
+						Resources: map[string]*v1.Resource{
+							"first": {
+								Resource: resource.MustStructJSON(nxr),
+							},
+							"second-0": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"second-1": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"third": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+						},
+					},
+				},
+			},
+			want: want{
+				rsp: &v1.RunFunctionResponse{
+					Meta:    &v1.ResponseMeta{Ttl: durationpb.New(response.DefaultTTL)},
+					Results: []*v1.Result{},
+					Desired: &v1.State{
+						Composite: &v1.Resource{
+							Resource: resource.MustStructJSON(xr),
+						},
+						Resources: map[string]*v1.Resource{
+							"first": {
+								Resource: resource.MustStructJSON(nxr),
+							},
+							"second-0": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"second-1": {
+								Resource: resource.MustStructJSON(nmr),
+							},
+							"second-0-first-usage": {
+								Resource: resource.MustStructJSON(nuv2),
+								Ready:    v1.Ready_READY_TRUE,
+							},
+							"second-1-first-usage": {
+								Resource: resource.MustStructJSON(nuv2),
+								Ready:    v1.Ready_READY_TRUE,
+							},
+							"third-second-0-usage": {
+								Resource: resource.MustStructJSON(nu2v2),
+								Ready:    v1.Ready_READY_TRUE,
+							},
+							"third-second-1-usage": {
+								Resource: resource.MustStructJSON(nu2v2),
+								Ready:    v1.Ready_READY_TRUE,
+							},
+							"third": {
+								Resource: resource.MustStructJSON(nmr),
+							},
 						},
 					},
 				},
