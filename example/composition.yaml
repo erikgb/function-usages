@@ -28,6 +28,10 @@ spec:
             base:
               apiVersion: nop.crossplane.io/v1alpha1
               kind: NopResource
+          - name: third-resource
+            base:
+              apiVersion: nop.crossplane.io/v1alpha1
+              kind: NopResource
     - step: deletion-ordering
       functionRef:
         name: function-usages

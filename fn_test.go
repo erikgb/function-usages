@@ -22,8 +22,8 @@ func TestRunFunction(t *testing.T) {
 		xr    = `{"apiVersion":"example.org/v1","kind":"XR","metadata":{"name":"cool-xr"},"spec":{"count":2}}`
 		nxr   = `{"apiVersion":"example.org/v1","kind":"XR","metadata":{"name":"cool-xr","namespace":"cool-namespace"},"spec":{"count":2}}`
 		nmr   = `{"apiVersion":"example.org/v1","kind":"MR","metadata":{"name":"cool-mr","namespace":"cool-namespace"}}`
-		nuv2  = `{"apiVersion":"protection.crossplane.io/v1beta1","kind":"Usage","metadata":{"name":"mr-cool-mr-xr-cool-xr-d9f469-dependency","namespace":"cool-namespace"},"spec":{"by":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"of":{"apiVersion":"example.org/v1","kind":"XR","resourceRef":{"name":"cool-xr"}},"reason":"dependency","replayDeletion":true}}`
-		nu2v2 = `{"apiVersion":"protection.crossplane.io/v1beta1","kind":"Usage","metadata":{"name":"mr-cool-mr-mr-cool-mr-91201d-dependency","namespace":"cool-namespace"},"spec":{"by":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"of":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"reason":"dependency","replayDeletion":true}}`
+		nuv2  = `{"apiVersion":"protection.crossplane.io/v1beta1","kind":"Usage","spec":{"by":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"of":{"apiVersion":"example.org/v1","kind":"XR","resourceRef":{"name":"cool-xr"}},"reason":"dependency","replayDeletion":true}}`
+		nu2v2 = `{"apiVersion":"protection.crossplane.io/v1beta1","kind":"Usage","spec":{"by":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"of":{"apiVersion":"example.org/v1","kind":"MR","resourceRef":{"name":"cool-mr"}},"reason":"dependency","replayDeletion":true}}`
 	)
 
 	type args struct {

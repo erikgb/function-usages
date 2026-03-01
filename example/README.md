@@ -16,11 +16,11 @@ apiVersion: example.crossplane.io/v1
 kind: XR
 metadata:
   name: example-xr
-  namespace: ns
 status:
   conditions:
   - lastTransitionTime: "2024-01-01T00:00:00Z"
-    message: 'Unready resources: first-subresource-1, first-subresource-2, and second-resource'
+    message: 'Unready resources: first-subresource-1, first-subresource-2, second-resource,
+      and 1 more'
     reason: Creating
     status: "False"
     type: Ready
@@ -33,7 +33,6 @@ metadata:
   labels:
     crossplane.io/composite: example-xr
   name: first-subresource-1
-  namespace: ns
   ownerReferences:
   - apiVersion: example.crossplane.io/v1
     blockOwnerDeletion: true
@@ -50,7 +49,6 @@ metadata:
   labels:
     crossplane.io/composite: example-xr
   name: first-subresource-2
-  namespace: ns
   ownerReferences:
   - apiVersion: example.crossplane.io/v1
     blockOwnerDeletion: true
@@ -67,7 +65,6 @@ metadata:
   labels:
     crossplane.io/composite: example-xr
   name: second-resource
-  namespace: ns
   ownerReferences:
   - apiVersion: example.crossplane.io/v1
     blockOwnerDeletion: true
@@ -81,10 +78,9 @@ kind: Usage
 metadata:
   annotations:
     crossplane.io/composition-resource-name: second-resource-first-subresource-1-usage
+  generateName: example-xr-
   labels:
     crossplane.io/composite: example-xr
-  name: nopresource-second-resource-nopresource-first-46f3d3-dependency
-  namespace: ns
   ownerReferences:
   - apiVersion: example.crossplane.io/v1
     blockOwnerDeletion: true
@@ -111,10 +107,9 @@ kind: Usage
 metadata:
   annotations:
     crossplane.io/composition-resource-name: second-resource-first-subresource-2-usage
+  generateName: example-xr-
   labels:
     crossplane.io/composite: example-xr
-  name: nopresource-second-resource-nopresource-first-185936-dependency
-  namespace: ns
   ownerReferences:
   - apiVersion: example.crossplane.io/v1
     blockOwnerDeletion: true
@@ -135,4 +130,20 @@ spec:
       name: first-subresource-2
   reason: dependency
   replayDeletion: true
+---
+apiVersion: nop.crossplane.io/v1alpha1
+kind: NopResource
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: third-resource
+  generateName: example-xr-
+  labels:
+    crossplane.io/composite: example-xr
+  ownerReferences:
+  - apiVersion: example.crossplane.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: XR
+    name: example-xr
+    uid: ""
 ```

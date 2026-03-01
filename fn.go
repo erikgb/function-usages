@@ -223,20 +223,11 @@ func ResourceNameHash(v resource.Name) resource.Name {
 func GenerateV2Usage(of *unstructured.Unstructured, by *unstructured.Unstructured) map[string]any {
 	const (
 		DependencyReason = "dependency"
-		UsageNameSuffix  = "dependency"
 	)
-
-	name := strings.ToLower(by.GetKind() + "-" + by.GetName() + "-" + of.GetKind() + "-" + of.GetName())
-	usageType := protectionv1beta1.UsageKind
-	usageMeta := map[string]any{
-		"namespace": of.GetNamespace(),
-		"name":      GenerateName(name, UsageNameSuffix),
-	}
 
 	usage := map[string]any{
 		"apiVersion": protectionv1beta1.SchemeGroupVersion.String(),
-		"kind":       usageType,
-		"metadata":   usageMeta,
+		"kind":       protectionv1beta1.UsageKind,
 		"spec": map[string]any{
 			"by": map[string]any{
 				"apiVersion": by.GetAPIVersion(),
